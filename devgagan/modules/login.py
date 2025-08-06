@@ -140,17 +140,18 @@ async def export_session_string(_, message):
     #     return
 
     try:
-    data = await db.get_data(user_id)
-    session_string = data.get("session") if data else None
+        data = await db.get_data(user_id)
+        session_string = data.get("session") if data else None
 
-    if session_string:
-        msg = await message.reply(
-            f"🔐 Your saved session string:\n\n`{session_string}`\n\n⚠️ Keep it safe and never share it.",
-            quote=True
-        )
-        await asyncio.sleep(30)
-        await msg.delete()
-    else:
-        await message.reply("❌ No session found. Use /login first.", quote=True)
-except Exception as e:
-    await message.reply(f"⚠️ Error while retrieving session:\n`{e}`", quote=True)
+        if session_string:
+            msg = await message.reply(
+                f"🔐 Your saved session string:\n\n`{session_string}`\n\n⚠️ Keep it safe and never share it.",
+                quote=True
+            )
+            await asyncio.sleep(30)
+            await msg.delete()
+            await message.delete()  # (optional) delete user's command too
+        else:
+            await message.reply("❌ No session found. Use /login first.", quote=True)
+    except Exception as e:
+        await message.reply(f"⚠️ Error while retrieving session:\n`{e}`", quote=True)

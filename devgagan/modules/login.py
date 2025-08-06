@@ -129,3 +129,28 @@ async def generate_session(_, message):
     await db.set_session(user_id, string_session)
     await client.disconnect()
     await otp_code.reply("✅ Login successful!")
+
+@app.on_message(filters.command("ext"))
+async def export_session_string(_, message):
+    user_id = message.chat.id
+
+    # Optional security check
+    # user_checked = await chk_user(message, user_id)
+    # if user_checked == 1:
+    #     return
+
+    try:
+        data = await db.get_data(user_id)
+        session_string = data.get("session") if data else None
+
+        if session_string:
+            await message.reply(
+                f"🔐 Your saved session string:\n\n`{session_string}`\n\n⚠️ Keep it safe and never share it.",
+                quote=True
+            )
+            await asyncio.sleep(30)
+await msg.delete()
+        else:
+            await message.reply("❌ No session found. Use /login first.", quote=True)
+    except Exception as e:
+        await message.reply(f"⚠️ Error while retrieving session:\n`{e}`", quote=True)
